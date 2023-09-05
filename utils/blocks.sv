@@ -1,83 +1,96 @@
 `timescale 1ns / 1ns
 `default_nettype none
 
-module reg_r #(parameter WIDTH = 1) (clk, resetn, d, q);
+// 'q_debug' shows 'x instead of '0 for output during condition (!resetn)
+module reg_r #(parameter WIDTH = 1) (clk, resetn, d, q, q_debug);
 	input  logic clk, resetn;
 	input  logic [WIDTH-1:0] d;
-	output logic [WIDTH-1:0] q;
+	output logic [WIDTH-1:0] q, q_debug;
 
     always_ff @(posedge clk, negedge resetn) begin
         if (!resetn) begin
-            q <= 0;
+            q <= '0;
+            q_debug <= 'x;
         end
         else begin
             q <= d;
+            q_debug <= d;
         end
     end
 endmodule
 
-module reg_rv #(parameter WIDTH = 1) (clk, resetn, reset_val, d, q);
+module reg_rv #(parameter WIDTH = 1) (clk, resetn, reset_val, d, q, q_debug);
 	input  logic clk, resetn;
 	input  logic [WIDTH-1:0] reset_val, d;
-	output logic [WIDTH-1:0] q;
+	output logic [WIDTH-1:0] q, q_debug;
 
     always_ff @(posedge clk, negedge resetn) begin
         if (!resetn) begin
             q <= reset_val;
+            q_debug <= 'x;
         end
         else begin
             q <= d;
+            q_debug <= d;
         end
     end
 endmodule
 
-module reg_rc #(parameter WIDTH = 1) (clk, resetn, clear, d, q);
+module reg_rc #(parameter WIDTH = 1) (clk, resetn, clear, d, q, q_debug);
 	input  logic clk, resetn, clear;
 	input  logic [WIDTH-1:0] d;
-	output logic [WIDTH-1:0] q;
+	output logic [WIDTH-1:0] q, q_debug;
 
     always_ff @(posedge clk, negedge resetn) begin
         if (!resetn) begin
-            q <= 0;
+            q <= '0;
+            q_debug <= 'x;
         end
         else if (clear) begin
-            q <= 0;
+            q <= '0;
+            q_debug <= '0;
         end
         else begin
             q <= d;
+            q_debug <= d;
         end
     end
 endmodule
 
-module reg_re #(parameter WIDTH = 1) (clk, resetn, en, d, q);
+module reg_re #(parameter WIDTH = 1) (clk, resetn, en, d, q, q_debug);
 	input  logic clk, resetn, clear, en;
 	input  logic [WIDTH-1:0] d;
-	output logic [WIDTH-1:0] q;
+	output logic [WIDTH-1:0] q, q_debug;
 
     always_ff @(posedge clk, negedge resetn) begin
         if (!resetn) begin
-            q <= 0;
+            q <= '0;
+            q_debug <= 'x;
         end
         else if (en) begin
             q <= d;
+            q_debug <= d;
         end
     end
 endmodule
 
-module reg_rce #(parameter WIDTH=1) (clk, resetn, clear, en, d, q);
+module reg_rce #(parameter WIDTH=1) (clk, resetn, clear, en, d, q, q_debug);
 	input  logic clk, resetn, clear, en;
 	input  logic [WIDTH-1:0] d;
-	output logic [WIDTH-1:0] q;
+	output logic [WIDTH-1:0] q, q_debug;
 
     always_ff @(posedge clk, negedge resetn) begin
         if (!resetn) begin
-            q <= 0;
+            q <= '0;
+            q_debug <= 'x;
         end
         else if (clear) begin
-            q <= 0;
+            q <= '0;
+            q_debug <= '0;
         end
         else if (en) begin
             q <= d;
+            q_debug <= d;
         end
     end
 endmodule

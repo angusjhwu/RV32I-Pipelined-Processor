@@ -128,9 +128,13 @@ Software Optimization
 - Software should assume backward branches are predicted taken, forward branches not taken
 */
 
-module pipelined_proc (clk, resetn, temp_sel);
-    input logic clk, resetn;
-    input logic temp_sel;
+module pipelined_proc (clk, resetn, pc, temp_sel, temp_target);
+    input  logic clk, resetn;
+    output logic [31:0] pc;
+
+    // Current Testbench Watch
+    input  logic temp_sel;
+    input  logic [31:0] temp_target;
 
 	parameter
 		LUI 	= 7'b0110111,
@@ -199,8 +203,8 @@ module pipelined_proc (clk, resetn, temp_sel);
     fetch fetch_stage (.clk(clk),
                        .resetn(resetn),
                        .pcSel(temp_sel),
-                       .pcTarget(32'h00000080),
-                       .instr(instr));
+                       .pcTarget(temp_target),
+                       .pc(pc));
 	
 	// // Decode
 	// always_ff @(posedge clk) begin
@@ -222,44 +226,4 @@ module pipelined_proc (clk, resetn, temp_sel);
 		
 	// end
 
-endmodule
-
-
-module fetch (clk, resetn, pcSel, pcTarget, instr);
-    input  logic clk, resetn, pcSel;
-    input  logic [31:0] pcTarget;
-    output logic [31:0] instr;
-
-    logic [31:0] pc, pcNext, pcPlus4;
-
-    adder #(.WIDTH(32)) pcIncr (.op0(pc),
-                                .op1(32'h4),
-                                .out(pcPlus4));
-
-    mux2 #(.WIDTH(32)) pcSelect (.in0(pcPlus4),
-                                 .in1(pcTarget),
-                                 .sel(pcSel),
-                                 .out(pcNext));
-
-    reg_r #(.WIDTH(32)) getPC (.clk(clk),
-                               .resetn(resetn),
-                               .d(pcNext),
-                               .q(pc));
-
-    mem mem1MB (.addr(pc[7:0]),
-                .val(instr));
-endmodule
-
-// 1MiB instr memory
-module mem (addr, val);
-    input  logic [7:0]  addr;
-    output logic [31:0] val;
-
-    logic [31:0] memArray [0:255];
-
-    initial begin
-        $readmemh("program.mem", memArray);
-    end
-
-    assign val = memArray[addr];
 endmodule
